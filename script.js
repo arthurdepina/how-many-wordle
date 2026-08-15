@@ -81,6 +81,9 @@ function render() {
 
 function onTileClick(r, c) {
   active = { row: r, col: c };
+  // Focus the hidden input *inside this tap gesture* so the mobile keyboard
+  // opens. Must happen synchronously on the user gesture (iOS requirement).
+  focusInput();
   const row = rows[r];
   if (row.letters[c] === "") {
     render(); // empty tile: just move the cursor here
@@ -92,27 +95,39 @@ function onTileClick(r, c) {
   render();
 }
 
+/* ---- Shared edit operations (used by both keyboard paths) ------- */
+
+function placeLetter(ch) {
+  rows[active.row].letters[active.col] = ch.toLowerCase();
+  if (active.col < 4) active.col++;
+  render();
+}
+
+function backspace() {
+  const row = rows[active.row];
+  if (row.letters[active.col] !== "") {
+    row.letters[active.col] = "";
+  } else if (active.col > 0) {
+    active.col--;
+    rows[active.row].letters[active.col] = "";
+  }
+  render();
+}
+
 /* ---- Keyboard input -------------------------------------------- */
 
+// Physical keyboards (desktop) send reliable `keydown` events. Mobile soft
+// keyboards do not for letters (they report keycode 229) — those are handled
+// by the `input` listener further down.
 document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "BUTTON") return;
   const key = e.key;
 
   if (/^[a-zA-Z]$/.test(key)) {
-    const row = rows[active.row];
-    row.letters[active.col] = key.toLowerCase();
-    if (active.col < 4) active.col++;
-    render();
+    placeLetter(key);
     e.preventDefault();
   } else if (key === "Backspace") {
-    const row = rows[active.row];
-    if (row.letters[active.col] !== "") {
-      row.letters[active.col] = "";
-    } else if (active.col > 0) {
-      active.col--;
-      rows[active.row].letters[active.col] = "";
-    }
-    render();
+    backspace();
     e.preventDefault();
   } else if (key === "ArrowLeft") {
     if (active.col > 0) active.col--;
@@ -133,6 +148,31 @@ document.addEventListener("keydown", (e) => {
     }
     render();
   }
+});
+
+/* ---- Mobile keyboard via a hidden input ------------------------ */
+
+const hiddenInput = document.getElementById("hiddenInput");
+// The input always holds this single sentinel char. Keeping it non-empty means
+// a backspace on an "empty" field still fires an `input` event we can detect.
+const SENTINEL = " ";
+hiddenInput.value = SENTINEL;
+
+function focusInput() {
+  // preventScroll stops the page from jumping to the off-screen input.
+  hiddenInput.focus({ preventScroll: true });
+  hiddenInput.value = SENTINEL;
+}
+
+hiddenInput.addEventListener("input", () => {
+  const val = hiddenInput.value;
+  const letters = val.replace(/[^a-zA-Z]/g, "");
+  if (letters.length) {
+    for (const ch of letters) placeLetter(ch); // handles autocomplete bursts too
+  } else if (val.length < SENTINEL.length) {
+    backspace(); // the sentinel was deleted -> treat as backspace
+  }
+  hiddenInput.value = SENTINEL; // reset for the next keystroke
 });
 
 /* ---- Compute & show results ------------------------------------ */

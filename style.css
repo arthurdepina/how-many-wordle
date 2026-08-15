@@ -80,6 +80,25 @@ header .sub { color: var(--muted); }
  * ------------------------------------------------------------------ */
 .board { display: flex; flex-direction: column; gap: 0.4ch; }
 
+/* Off-screen-ish but focusable, so tapping a tile can open the phone keyboard.
+   font-size:16px stops iOS from zooming when it gains focus. */
+#hiddenInput {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  z-index: -1;
+}
+
 .row {
   display: grid;
   grid-template-columns: repeat(5, 3ch) auto;

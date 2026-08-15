@@ -1,0 +1,188 @@
+/* ------------------------------------------------------------------ *
+ * how-many-wordle
+ * Styling loosely follows "The Monospace Web" by Oskar Wickström:
+ * everything on a monospace grid, generous rules, minimal chrome.
+ * We break from strict monochrome only for the Wordle tile colours.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --font: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    "DejaVu Sans Mono", monospace;
+  --line: 1.25rem;               /* the vertical grid unit */
+  --fg: #000;
+  --bg: #fff;
+  --muted: #666;
+  --border: #000;
+
+  /* Wordle tile colours */
+  --green: #6aaa64;
+  --yellow: #c9b458;
+  --gray: #787c7e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e6e6e6;
+    --bg: #121212;
+    --muted: #9a9a9a;
+    --border: #e6e6e6;
+    --gray: #565758;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  line-height: var(--line);
+  color: var(--fg);
+  background: var(--bg);
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: var(--line) 2ch calc(var(--line) * 3);
+}
+
+/* ---- Typographic rhythm ---- */
+h1, h2, p, ul, ol, table, .board, .controls, details {
+  margin: 0 0 var(--line);
+}
+
+h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1ch;
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: var(--line);
+}
+
+a { color: var(--fg); }
+
+.muted { color: var(--muted); }
+
+/* A horizontal rule drawn as a row of dashes, monospace-web style. */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--line) 0;
+}
+
+header .sub { color: var(--muted); }
+
+/* ------------------------------------------------------------------ *
+ * The guess board
+ * ------------------------------------------------------------------ */
+.board { display: flex; flex-direction: column; gap: 0.4ch; }
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 3ch) auto;
+  gap: 0.4ch;
+  align-items: center;
+}
+
+.tile {
+  width: 3ch;
+  height: var(--line);
+  line-height: var(--line);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.2ch 0;
+  height: 2.4ch;
+  line-height: 2.4ch;
+}
+
+.tile.active { outline: 2px solid var(--border); outline-offset: 1px; }
+
+.tile.gray   { background: var(--gray);   color: #fff; border-color: var(--gray); }
+.tile.yellow { background: var(--yellow); color: #fff; border-color: var(--yellow); }
+.tile.green  { background: var(--green);  color: #fff; border-color: var(--green); }
+
+.row .rowhint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding-left: 1ch;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ *
+ * Controls
+ * ------------------------------------------------------------------ */
+.controls { display: flex; flex-wrap: wrap; gap: 1ch; }
+
+button {
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: var(--line);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.1ch 1.5ch;
+  cursor: pointer;
+}
+button:hover { background: var(--fg); color: var(--bg); }
+button:disabled { opacity: 0.35; cursor: not-allowed; }
+button:disabled:hover { background: var(--bg); color: var(--fg); }
+
+/* ------------------------------------------------------------------ *
+ * The big count
+ * ------------------------------------------------------------------ */
+.count-box {
+  border: 1px solid var(--border);
+  padding: var(--line) 2ch;
+  text-align: center;
+  margin: var(--line) 0;
+}
+.count-box .n {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  display: block;
+}
+.count-box .label { color: var(--muted); }
+
+/* ------------------------------------------------------------------ *
+ * The hidden word list
+ * ------------------------------------------------------------------ */
+details {
+  border: 1px solid var(--border);
+  padding: 0 2ch;
+}
+summary {
+  cursor: pointer;
+  padding: 0.4ch 0;
+  font-weight: 700;
+  list-style: none;
+}
+summary::before { content: "[+] "; }
+details[open] summary::before { content: "[-] "; }
+summary::-webkit-details-marker { display: none; }
+
+.wordgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7ch, 1fr));
+  gap: 0 1ch;
+  padding-bottom: var(--line);
+}
+.wordgrid span { text-transform: uppercase; }
+
+footer { color: var(--muted); font-size: 0.85rem; }
+
+kbd {
+  border: 1px solid var(--border);
+  padding: 0 0.6ch;
+  border-radius: 2px;
+  font-family: var(--font);
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>how many wordle?</title>
+  <meta name="description" content="Given your Wordle guesses and their colours, how many possible words remain?">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>how many wordle?</h1>
+    <p class="sub muted">
+      Type your guesses, click the tiles to set each colour, and see how many
+      words could still be the answer.
+    </p>
+  </header>
+
+  <hr>
+
+  <section>
+    <h2>Your guesses</h2>
+    <p class="muted">
+      Type letters to fill a row. Click a tile to cycle its colour:
+      <span style="color:var(--gray)">gray</span> &rarr;
+      <span style="color:var(--yellow)">yellow</span> &rarr;
+      <span style="color:var(--green)">green</span>.
+    </p>
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <button id="addRow">+ add row</button>
+      <button id="removeRow">&minus; remove row</button>
+      <button id="reset">reset</button>
+    </div>
+  </section>
+
+  <div class="count-box">
+    <span class="n" id="count">&mdash;</span>
+    <span class="label" id="countLabel">possible words</span>
+  </div>
+
+  <details id="wordDetails">
+    <summary id="wordSummary">show possible words</summary>
+    <div class="wordgrid" id="wordgrid"></div>
+  </details>
+
+  <hr>
+
+  <footer>
+    <p>
+      Word list: <a href="https://gist.github.com/dracos/dd0668f281e685bad51479e5acaadb93">dracos valid-wordle-words</a>
+      (14,855 words). The same logic lives, fully commented, in
+      <code>wordle_solver.py</code>.
+    </p>
+    <p>
+      Tip: <kbd>Enter</kbd> jumps to the next row, <kbd>Backspace</kbd> deletes.
+      Design loosely follows <a href="https://owickstrom.github.io/the-monospace-web/">The Monospace Web</a>.
+    </p>
+  </footer>
+
+  <script src="words.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
